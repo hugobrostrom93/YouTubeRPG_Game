@@ -19,7 +19,7 @@ namespace YouTubeRPG_Game
             Health = 100;
         }
 
-        public void GetsHit(int hit_value)
+        public int GetsHit(int hit_value) // public int istället för public void gör att denna metoden returnerar en int
         {
             // Check if the player was guarding
             if (isGuaring)
@@ -41,6 +41,9 @@ namespace YouTubeRPG_Game
             {
                 Die();
             }
+
+            // Return the health from this function
+            return Health;
         }
 
         public void Heal(int amount_to_heal)

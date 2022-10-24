@@ -1,12 +1,15 @@
-﻿namespace YouTubeRPG_Game
+﻿using System;
+
+namespace YouTubeRPG_Game
 {
     internal class Program
     {
         static void Main(string[] args)
         {
+            List<string> gameHistory = new List<string>();
+
+
             Random random = new Random();
-
-
             Player player = new Player();
 
             Console.WriteLine("What is your name:");
@@ -16,44 +19,63 @@
             Enemy firstEnemy = new Enemy("Giant Enemy Crab");
 
             // Perform the battle game loop
-            GameLoop(firstEnemy, random, player, 5, 20);
+            GameLoop(firstEnemy, random, player, 5, 20, gameHistory);
 
             // Check if the player was the one who died
             if (!player.IsDead)
             {
                 Boss boss = new Boss();
                 // Perform the battle game loop
-                GameLoop(boss, random, player, 50, 10);
+                GameLoop(boss, random, player, 50, 10, gameHistory);
 
                 // Check if the player was the one who died
                 if (!player.IsDead)
                 {
                     // The player won the game
                     Console.WriteLine("Congratulations " + player.Name + " you defeted all the enemies and have won the game!");
-                } else
+                }
+                else
                 {
-                    {
-                        // The player is dead. Let the player know and end the game
-                        GameOver();
-                    }
+                    // The player is dead. Let the player know and end the game
+                    GameOver();
                 }
 
-            } else
+                // Let the player know this is the history
+                Console.WriteLine("\n\nThis is the history of the game: \n\n");
+
+                // Loop through the whole game history
+                foreach (var history in gameHistory)
+                {
+                    // Write out the game history
+                    Console.WriteLine(history);
+                }
+
+            }
+            else // KAN JAG TA BORT DENNA!?
             {
                 // The player is dead. Let the player know and end the game
                 GameOver();
             }
         }
 
-        private static void GameOver()
+        private static void GameOver() // private static gör sa att vi kommer åt nedan kod inne i main pga den också är static 
         {
             Console.WriteLine("GAME OVER!!!");
         }
 
-        private static void GameLoop(Enemy enemy, Random random, Player player, int max_attack_power, int max_player_attack_power)
+        // max_attack_power = max damge from monster 
+        // max_player_attack_power = max damge from player
+        private static void GameLoop(Enemy enemy, Random random, Player player, int max_attack_power, int max_player_attack_power, List<string> gameHistoryList)
         {
-            Console.WriteLine(player.Name + " you have encountered a " + enemy.Name + "!");
+            // Define a list of the strings we will use to write out
+            string initialText = player.Name + " you have encountered a " + enemy.Name + "!";
+            string attackText = null;
+            string enemyAttackText = null;
 
+            Console.WriteLine(initialText);
+
+            // Add the string to the game history
+            gameHistoryList.Add(initialText);
 
             while (!enemy.IsDead && !player.IsDead)
             {
@@ -64,14 +86,25 @@
                 switch (playerAction)
                 {
                     case "1":
-                        Console.WriteLine("\nYou choose to single attack the " + enemy.Name + "!");
+                        // Save the attack text.
+                        attackText = "\nYou choose to single attack the " + enemy.Name + "!";
+                        Console.WriteLine(attackText);
+
+                        // Add the history
+                        gameHistoryList.Add(attackText);
 
                         // Apply the attack damage to the enemy
                         enemy.GetsHit(random.Next(1, max_player_attack_power));
                         break;
 
                     case "2":
-                        Console.WriteLine("\nYou choose to three strike attack the " + enemy.Name + "!");
+                        // Save the attack text.
+                        attackText = "\nYou choose to three strike attack the " + enemy.Name + "!";
+                        Console.WriteLine(attackText);
+
+                        // Add the history
+                        gameHistoryList.Add(attackText);
+
                         for (int i = 0; i < 3; i++)
                         {
                             // Apply the attack damage to the enemy
@@ -87,13 +120,25 @@
                         break;
 
                     case "3":
-                        Console.WriteLine("You choose to defend!");
+                        // Save the attack text.
+                        attackText = "You choose to defend!";
+                        Console.WriteLine(attackText);
+
+                        // Add the history
+                        gameHistoryList.Add(attackText);
+
                         // Set that the player is guarding
                         player.isGuaring = true;
                         break;
 
                     case "4":
-                        Console.WriteLine("You choose to heal!");
+                        // Save the attack text.
+                        attackText = "You choose to heal!";
+                        Console.WriteLine(attackText);
+
+                        // Add the history
+                        gameHistoryList.Add(attackText);
+
                         player.Heal(random.Next(1, 15));
                         break;
 
@@ -105,7 +150,11 @@
                 if (!enemy.IsDead)
                 {
                     // Have the enemy attacke the player after the player attacks
-                    player.GetsHit(random.Next(1, max_attack_power));
+                    enemyAttackText = "The enemy attacked the player and the player has " + player.GetsHit(random.Next(1, max_attack_power)) + " health remaining";
+
+                    // Add to the list that the enemy attacked you 
+                    gameHistoryList.Add(enemyAttackText);
+
                 }
             }
         }
